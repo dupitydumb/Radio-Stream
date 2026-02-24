@@ -701,7 +701,7 @@
       const s = document.createElement("style");
       s.id = "or-styles";
       s.textContent = `
-        /* Overlay & Panel (same as before, with small improvements) */
+        /* Overlay & Panel */
         #or-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(6px); z-index:10000; opacity:0; visibility:hidden; transition:opacity 0.2s; }
         #or-overlay.open { opacity:1; visibility:visible; }
         #or-panel { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.96); width:700px; max-width:96vw; max-height:88vh; background:var(--bg-elevated,#181818); border:1px solid var(--border-color,#2e2e2e); border-radius:20px; z-index:10001; box-shadow:0 28px 70px rgba(0,0,0,0.65); display:flex; flex-direction:column; overflow:hidden; opacity:0; visibility:hidden; transition:all 0.3s cubic-bezier(0.16,1,0.3,1); }
@@ -798,23 +798,75 @@
         .or-toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#222; color:#fff; padding:10px 20px; border-radius:8px; z-index:10010; font-size:13px; box-shadow:0 4px 16px rgba(0,0,0,0.4); opacity:0; transition:opacity 0.25s; pointer-events:none; white-space:nowrap; }
         .or-toast.err { background:#c0392b; }
 
-        /* Mobile */
-        @media (max-width:768px) {
-          #or-panel { width:100vw; height:100vh; max-height:100vh; top:0; left:0; transform:none; border-radius:0; }
-          .or-header { flex-wrap:wrap; }
-          .or-title { order:1; width:100%; margin-bottom:4px; }
-          #or-search-wrap { order:2; flex:1; }
-          .or-icon-btn { min-width:44px; min-height:44px; }
-          .or-fav-btn { opacity:1; }
-          .or-station-row { padding:12px 8px; }
-          .or-play-btn { width:44px; height:44px; }
-          .or-now-live { display:none; }
+        /* ── Mobile (FIXED) ─────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+          #or-panel {
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform: none;
+            border-radius: 0;
+            max-width: none;
+            max-height: none;
+          }
+
+          .or-header {
+            flex-wrap: wrap;
+            padding: 8px 12px;
+            gap: 6px;
+          }
+
+          .or-title {
+            width: 100%;
+            margin-bottom: 4px;
+            font-size: 16px;
+          }
+
+          #or-search-wrap {
+            flex: 1 1 auto;
+            min-width: 0;
+          }
+
+          .or-icon-btn {
+            min-width: 44px;
+            min-height: 44px;
+          }
+
+          .or-fav-btn {
+            opacity: 1;
+          }
+
+          .or-station-row {
+            padding: 12px 8px;
+          }
+
+          .or-play-btn {
+            width: 44px;
+            height: 44px;
+          }
+
+          .or-now-live {
+            display: none;
+          }
         }
-        @media (max-width:480px) {
-          .or-tag-grid { gap:6px; }
-          .or-tag-chip { padding:8px 12px; font-size:12px; }
-          .or-country-flag { font-size:22px; }
-          .or-country-name { font-size:14px; }
+
+        @media (max-width: 480px) {
+          .or-tag-grid {
+            gap: 6px;
+          }
+          .or-tag-chip {
+            padding: 8px 12px;
+            font-size: 12px;
+          }
+          .or-country-flag {
+            font-size: 22px;
+          }
+          .or-country-name {
+            font-size: 14px;
+          }
         }
       `;
       document.head.appendChild(s);
