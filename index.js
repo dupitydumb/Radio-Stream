@@ -34,7 +34,7 @@
     throw new Error("All Radio‑Browser mirrors failed");
   }
 
-  // ── Icons (same as before) ──────────────────────────────────────────────
+  // ── Icons ───────────────────────────────────────────────────────────────
   const I = {
     radio:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7l-8-4"/><circle cx="17" cy="14" r="2"/><path d="M5 11h4M5 15h4"/></svg>`,
     search:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
@@ -524,14 +524,22 @@
       this.attachStationListeners(body);
     },
 
-    // ── Station row render ───────────────────────────────────────────────
+    // ── Station row render (with data attributes for playback) ────────────
     renderStationRow(station, showFlag = false) {
       const isPlaying = this.nowPlaying?.station?.id === station.id;
       const isFaved = this.favorites.has(station.id);
       const flag = showFlag && station.countryFlag ? `<span class="or-flag-badge">${station.countryFlag}</span>` : "";
 
       return `
-        <div class="or-station-row ${isPlaying ? "now-playing" : ""}" data-station-id="${this.esc(station.id)}">
+        <div class="or-station-row ${isPlaying ? "now-playing" : ""}"
+             data-station-id="${this.esc(station.id)}"
+             data-name="${this.esc(station.name)}"
+             data-url="${this.esc(station.url)}"
+             data-genre="${this.esc(station.genre || '')}"
+             data-country="${this.esc(station.countryName || '')}"
+             data-country-flag="${this.esc(station.countryFlag || '')}"
+             data-favicon="${this.esc(station.favicon || '')}"
+             data-bitrate="${station.bitrate || ''}">
           <button class="or-play-btn" data-play="${this.esc(station.id)}" title="Play ${this.esc(station.name)}">
             ${isPlaying ? I.pause : I.play}
           </button>
@@ -550,18 +558,34 @@
       `;
     },
 
+    // ── Attach listeners to station rows (play/fav) ───────────────────────
     attachStationListeners(container) {
       container.addEventListener("click", async e => {
-        const playId = e.target.closest("[data-play]")?.dataset.play;
-        const favId = e.target.closest("[data-fav]")?.dataset.fav;
+        const playBtn = e.target.closest("[data-play]");
+        const favBtn = e.target.closest("[data-fav]");
 
-        if (playId) {
-          const station = this.findStation(playId);
-          if (station) await this.playStation(station);
+        if (playBtn) {
+          const row = playBtn.closest(".or-station-row");
+          if (!row) return;
+
+          // Reconstruct station object from data attributes
+          const station = {
+            id: row.dataset.stationId,
+            name: row.dataset.name,
+            url: row.dataset.url,
+            genre: row.dataset.genre,
+            countryName: row.dataset.country,
+            countryFlag: row.dataset.countryFlag,
+            favicon: row.dataset.favicon,
+            bitrate: row.dataset.bitrate ? parseInt(row.dataset.bitrate) : null,
+          };
+          await this.playStation(station);
           return;
         }
-        if (favId) {
-          this.toggleFavorite(favId);
+
+        if (favBtn) {
+          const stationId = favBtn.dataset.fav;
+          this.toggleFavorite(stationId);
           return;
         }
       });
@@ -573,8 +597,7 @@
         const cust = this.customStations.find(s => s.id === id);
         if (cust) return { ...cust, countryFlag: "🔧", countryName: "My Stations" };
       }
-      // For API stations, we can't search all cache efficiently; we rely on current view.
-      // Fallback: search in current DOM? We'll just assume it's in current view.
+      // For API stations, we can't search all cache efficiently; rely on current DOM (playback uses data attributes)
       return null;
     },
 
@@ -801,13 +824,14 @@
         /* ── Mobile (FIXED) ─────────────────────────────────────────────── */
         @media (max-width: 768px) {
           #or-panel {
-            width: 100%;
-            height: 100%;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            transform: none;
+            width: 100vw;
+            height: 100dvh;
+            transform: none !important;
             border-radius: 0;
             max-width: none;
             max-height: none;
@@ -815,7 +839,7 @@
 
           .or-header {
             flex-wrap: wrap;
-            padding: 8px 12px;
+            padding: 8px env(safe-area-inset-right) 8px env(safe-area-inset-left);
             gap: 6px;
           }
 
@@ -823,6 +847,8 @@
             width: 100%;
             margin-bottom: 4px;
             font-size: 16px;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
           }
 
           #or-search-wrap {
@@ -850,6 +876,10 @@
 
           .or-now-live {
             display: none;
+          }
+
+          .or-body {
+            padding-bottom: env(safe-area-inset-bottom);
           }
         }
 
