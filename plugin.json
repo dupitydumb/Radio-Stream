@@ -1,12 +1,9 @@
 {
-  "name": "Online Radio",
-  "safe_name": "online-radio",
+  "name": "Radio Stream",
+  "safe_name": "Radio-Stream",
   "version": "1.5.0",
-  "author": "Community",
+  "author": "You",
   "description": "Stream hundreds of live radio stations from around the world, grouped by region and country. Includes genre filtering, favorites, and custom station support.",
-  "repo": "https://github.com/dupitydumb/Radio-Stream",
-  "repository": "https://github.com/dupitydumb/Radio-Stream",
-  "manifest_url": null,
   "type": "js",
   "entry": "index.js",
   "permissions": [
@@ -20,7 +17,6 @@
   "ui_slots": [
     "playerbar:menu"
   ],
-  "icon": null,
   "category": "streaming",
   "provides": [
     "stream"
@@ -34,5 +30,7 @@
     "world"
   ],
   "min_version": "1.5.0",
-  "license": "MIT"
+  "license": "MIT",
+  "repo": "https://github.com/dupitydumb/Radio-Stream",
+  "repository": "https://github.com/dupitydumb/Radio-Stream"
 }
