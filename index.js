@@ -9,6 +9,8 @@
 (function () {
   "use strict";
 
+  let pluginApi = null;
+
   // ── API base – multiple mirrors for reliability ─────────────────────────
   const API_BASE_URLS = [
     "https://de1.api.radio-browser.info",
@@ -17,12 +19,13 @@
   ];
   let currentApiBase = API_BASE_URLS[0];
 
-  // Helper to try different mirrors
+  // Helper to try different mirrors (uses api.fetch to bypass CORS)
   async function apiFetch(path) {
+    const doFetch = (pluginApi && pluginApi.fetch) ? pluginApi.fetch.bind(pluginApi) : fetch;
     for (const base of API_BASE_URLS) {
       try {
         const url = `${base}${path}`;
-        const res = await fetch(url);
+        const res = await doFetch(url);
         if (res.ok) {
           currentApiBase = base; // remember working one
           return res.json();
@@ -71,6 +74,23 @@
     async init(api) {
       console.log("[OnlineRadio] Initializing...");
       this.api = api;
+      pluginApi = api;
+
+      // Register StreamProvider for Audion v1.5.0+ (prevents catalog handoff hijacking)
+      if (api.stream?.registerProvider) {
+        api.stream.registerProvider({
+          id: "radio",
+          name: "Online Radio",
+          version: "1.5.0",
+          description: "Live internet radio stream provider",
+          getStream: async (url) => ({ url, format: "audio/stream" }),
+          resolveByQuery: async () => null
+        });
+        console.log("[OnlineRadio] StreamProvider 'radio' registered for v1.5.0+");
+      } else if (api.stream?.registerResolver) {
+        api.stream.registerResolver("radio", async (url) => url);
+      }
+
       await this.loadState();
       this.injectStyles();
       this.buildPanel();
@@ -102,6 +122,14 @@
     stop() { this.close(); },
     destroy() {
       this.close();
+      if (this.api?.ui?.unregisterSlot) {
+        this.api.ui.unregisterSlot("playerbar:menu");
+      }
+      if (this.api?.stream?.unregisterProvider) {
+        this.api.stream.unregisterProvider("radio");
+      } else if (this.api?.stream?.unregisterResolver) {
+        this.api.stream.unregisterResolver("radio");
+      }
       ["or-styles", "or-panel", "or-overlay", "or-playerbar-btn", "or-now-bar"].forEach(id => {
         document.getElementById(id)?.remove();
       });

@@ -1,26 +1,38 @@
 {
-    "name": "Online Radio",
-    "version": "1.0.0",
-    "author": "You",
-    "description": "Stream hundreds of live radio stations from around the world, grouped by region and country. Includes genre filtering, favorites, and custom station support.",
-    "type": "js",
-    "entry": "index.js",
-    "permissions": [
-        "network:fetch",
-        "ui:inject",
-        "player:control",
-        "player:read",
-        "storage:local"
-    ],
-    "category": "library",
-    "tags": [
-        "radio",
-        "live",
-        "streaming",
-        "online",
-        "stations",
-        "world"
-    ],
-    "license": "MIT",
-    "repository": "https://github.com/dupitydumb/Radio-Stream"
+  "name": "Online Radio",
+  "safe_name": "online-radio",
+  "version": "1.5.0",
+  "author": "You",
+  "description": "Stream hundreds of live radio stations from around the world, grouped by region and country. Includes genre filtering, favorites, and custom station support.",
+  "repo": "https://github.com/dupitydumb/Radio-Stream",
+  "repository": "https://github.com/dupitydumb/Radio-Stream",
+  "manifest_url": null,
+  "type": "js",
+  "entry": "index.js",
+  "permissions": [
+    "network:fetch",
+    "ui:inject",
+    "player:control",
+    "player:read",
+    "storage:local"
+  ],
+  "cross_plugin_access": [],
+  "ui_slots": [
+    "playerbar:menu"
+  ],
+  "icon": null,
+  "category": "streaming",
+  "provides": [
+    "stream"
+  ],
+  "tags": [
+    "radio",
+    "live",
+    "streaming",
+    "online",
+    "stations",
+    "world"
+  ],
+  "min_version": "1.5.0",
+  "license": "MIT"
 }
